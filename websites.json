@@ -1,0 +1,16 @@
+{
+  "websites": [
+    {
+      "url":"www.google.com",
+      "crawl_timeout": 300,
+      "frequency": 30,
+      "failure_thresold": 3
+    },
+    {
+      "url":"www.facebook.com",
+      "crawl_timeout": 400,
+      "frequency": 40,
+      "failure_thresold": 4
+    }
+  ]
+}
