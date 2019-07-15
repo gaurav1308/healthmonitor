@@ -42,11 +42,13 @@ func FetchData(c *gin.Context){
 	var data model.UrlData
 	//db.Find(&data)
 	//var health int
-	resource.Db.Model(&model.UrlModel{}).Where("r_id = ?", id).Where("total_attempts =? ",tries).First(&data)
-	if(data.RID!=0) {
-		fmt.Println(data.Health)
+	resource.Db.Model(&model.UrlModel{}).Where("url_id = ?", id).Where("total_attempts =? ",tries).First(&data)
+	if(data.URLID!=0) {
+		//fmt.Println(data.Health)
+		c.JSON(http.StatusOK,gin.H{"Health":data.Health})
 	}else {
-		fmt.Println("faltu")
+		c.JSON(http.StatusOK,gin.H{"Message":"Not exist"})
+		//fmt.Println("faltu")
 	}
 }
 func FetchAllUrl() {
@@ -68,7 +70,7 @@ func FetchAllUrl() {
 func testing(item model.UrlModel){
 	for i:=0;i<item.Failure_thresold;i++ {
 		var udata model.UrlData
-		udata.RID=item.ID
+		udata.URLID=item.ID
 		udata.Attempts=i+1
 		udata.Total_attempts=item.Tries+1
 		//var up urlModel

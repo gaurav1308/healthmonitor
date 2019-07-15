@@ -5,7 +5,6 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
 type (
-// todoModel describes a todoModel type
 UrlModel struct {
 gorm.Model
 URL     string `json:"url"`

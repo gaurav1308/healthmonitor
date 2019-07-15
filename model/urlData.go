@@ -5,7 +5,7 @@ import "github.com/jinzhu/gorm"
 type(
 UrlData struct {
 gorm.Model
-RID       uint `db:"rid"`
+URLID       uint `db:"urlid"`
 Attempts    int    `db:"attempts"`
 Health string    `db:"health"`
 Total_attempts int `db:total_attempts`
