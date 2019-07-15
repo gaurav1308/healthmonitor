@@ -12,17 +12,17 @@ import (
 
 var db *gorm.DB
 
-type Websites struct{
-	Websites []Website`json:"websites"`
-}
-
-
-type  Website struct{
-	URL     string `json:"url"`
-	Crawl_timeout int    `json:"crawl_timeout"`
-	Frequency	int `json:"frequency"`
-	Failure_thresold int`json:"failure_thresold"'`
-}
+//type Websites struct{
+//	Websites []Website`json:"websites"`
+//}
+//
+//
+//type  Website struct{
+//	URL     string `json:"url"`
+//	Crawl_timeout int    `json:"crawl_timeout"`
+//	Frequency	int `json:"frequency"`
+//	Failure_thresold int`json:"failure_thresold"'`
+//}
 func init() {
 	//open a db connection
 	var err error
@@ -66,7 +66,7 @@ func main() {
 	v1 := router.Group("/healthmonitor")
 	{
 		v1.POST("/send", createUrl)
-		v1.GET("/health", fetchData)
+		v1.GET("/health/:id/:tries", fetchData)
 	}
 	router.Run()
 	//doEvery(2*time.Second, helloworld)
@@ -81,6 +81,7 @@ type (
 		Crawl_timeout int    `json:"crawl_timeout"`
 		Frequency	int `json:"frequency"`
 		Failure_thresold int`json:"failure_thresold"'`
+		Tries int  `json:"tries" gorm:"default:0"`
 	}
 
 	// transformedTodo represents a formatted todo
@@ -96,7 +97,8 @@ type (
 		gorm.Model
 		RID       uint `db:"rid"`
 		Attempts    int    `db:"attempts"`
-		Health int    `db:"health"`
+		Health string    `db:"health"`
+		Total_attempts int `db:total_attempts`
 	}
 
 )
@@ -126,10 +128,19 @@ func createUrl(c *gin.Context) {
 }
 
 func fetchData(c *gin.Context){
-
+	id:=c.Param("id")
+	tries:=c.Param("tries")
+	var data urlData
+	//db.Find(&data)
+	//var health int
+	db.Model(&urlModel{}).Where("r_id = ?", id).Where("total_attempts =? ",tries).First(&data)
+	if(data.RID!=0) {
+		fmt.Println(data.Health)
+	}else {
+		fmt.Println("faltu")
+	}
 }
 func fetchAllUrl() {
-	//fmt.Println("m chala")
 	var urls []urlModel
 	db.Find(&urls)
 
@@ -150,7 +161,10 @@ func testing(item urlModel){
 		var udata urlData
 		udata.RID=item.ID
 		udata.Attempts=i+1
-
+		udata.Total_attempts=item.Tries+1
+		//var up urlModel
+		item.Tries=item.Tries+1;
+		db.Save(&item)
 		timeout := time.Duration(item.Crawl_timeout) * time.Millisecond
 		client := http.Client{
 			Timeout: timeout,
@@ -158,18 +172,18 @@ func testing(item urlModel){
 		resp, err := client.Get(item.URL)
 		if err != nil {
 			fmt.Println(err.Error())
-			udata.Health = 0
+			udata.Health = "BAD"
 			db.Save(&udata)
 			time.Sleep(time.Duration(item.Frequency)*time.Second)
 		} else {
 			if resp.StatusCode == 200 {
-				udata.Health = 1
+				udata.Health = "GOOD"
 				db.Save(&udata)
 				return
 				break
 
 			} else {
-				udata.Health = 0
+				udata.Health = "BAD"
 				db.Save(&udata)
 				time.Sleep(time.Duration(item.Frequency)*time.Second)
 
