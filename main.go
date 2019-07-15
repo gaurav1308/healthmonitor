@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"github.com/robfig/cron"
 	"net/http"
 	"time"
 )
@@ -33,14 +34,20 @@ func init() {
 	//Migrate the schema
 	db.AutoMigrate(&urlModel{})
 	db.AutoMigrate(&urlData{})
-}
 
 
-func doEvery(d time.Duration, f func(time.Time)) {
-	for x := range time.Tick(d) {
-		f(x)
-	}
+	//fmt.Println("lkasjdf")
+	c := cron.New()
+	c.AddFunc("*/1 * * * *",fetchAllUrl)
+	c.Start()
 }
+
+//
+//func doEvery(d time.Duration, f func(time.Time)) {
+//	for x := range time.Tick(d) {
+//		f(x)
+//	}
+//}
 
 
 //func helloworld(t time.Time) {
@@ -59,7 +66,7 @@ func main() {
 	v1 := router.Group("/healthmonitor")
 	{
 		v1.POST("/send", createUrl)
-		v1.GET("/health", fetchAllUrl)
+		v1.GET("/health", fetchData)
 	}
 	router.Run()
 	//doEvery(2*time.Second, helloworld)
@@ -118,53 +125,21 @@ func createUrl(c *gin.Context) {
 
 }
 
+func fetchData(c *gin.Context){
 
-func fetchAllUrl(c *gin.Context) {
+}
+func fetchAllUrl() {
+	//fmt.Println("m chala")
 	var urls []urlModel
-	//fmt.Println("hi1")
 	db.Find(&urls)
 
-	if len(urls) <= 0 {
-		c.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "message": "No URL found!"})
-		return
-	}
+	//if len(urls) <= 0 {
+	//	c.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "message": "No URL found!"})
+	//	return
+	//}
 
 	for _, item := range urls {
-		//fmt.Println("hi2")
 		go testing(item)
-			//for i:=0;i<item.Failure_thresold;i++ {
-			//	//fmt.Println("hi3")
-			//	var udata urlData
-			//	udata.RID=item.ID
-			//	udata.Attempts=i+1
-			//
-			//	timeout := time.Duration(item.Crawl_timeout) * time.Millisecond
-			//	client := http.Client{
-			//		Timeout: timeout,
-			//	}
-			//	resp, err := client.Get(item.URL)
-			//	if err != nil {
-			//		fmt.Println(err.Error())
-			//		udata.Health = 0
-			//		db.Save(&udata)
-			//		time.Sleep(time.Duration(item.Frequency)*time.Second)
-			//	} else {
-			//		if resp.StatusCode == 200 {
-			//			udata.Health = 1
-			//			db.Save(&udata)
-			//			//fmt.Println("hi4")
-			//			return
-			//			break
-			//
-			//		} else {
-			//			udata.Health = 0
-			//			db.Save(&udata)
-			//			time.Sleep(time.Duration(item.Frequency)*time.Second)
-			//
-			//		}
-			//	}
-			//
-			//}
 
 
 	}
