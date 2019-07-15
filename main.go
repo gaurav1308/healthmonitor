@@ -60,9 +60,6 @@ func main() {
 	{
 		v1.POST("/send", createUrl)
 		v1.GET("/health", fetchAllUrl)
-		//v1.GET("/:id", fetchSingleTodo)
-		//v1.PUT("/:id", updateTodo)
-		//v1.DELETE("/:id", deleteTodo)
 	}
 	router.Run()
 	//doEvery(2*time.Second, helloworld)
@@ -101,16 +98,23 @@ func createUrl(c *gin.Context) {
 
 	var urls []urlModel
 	c.Bind(&urls)
-	//fmt.Println(url)
-	//if url.URL != "" && url.Crawl_timeout !=null && url.Frequency!= && url.Failure_thresold!=""{
-	//	// INSERT INTO "users" (name) VALUES (user.Name);
 	for i := 0; i < len(urls); i++ {
 		var count int
+		var u urlModel
 		db.Model(&urlModel{}).Where("url = ?", urls[i].URL).Count(&count)
 		if count == 0 {
+			//fmt.Println("count == 0")
 			db.Save(&urls[i])
+		} else {
+			//fmt.Println("count==1")
+			db.Where("url = ?", urls[i].URL).First(&u)
+			u.Frequency=urls[i].Frequency
+			u.Crawl_timeout=urls[i].Crawl_timeout
+			u.Failure_thresold=urls[i].Failure_thresold
+			db.Save(&u)
 		}
-	}
+
+		}
 
 }
 
@@ -168,7 +172,6 @@ func fetchAllUrl(c *gin.Context) {
 
 func testing(item urlModel){
 	for i:=0;i<item.Failure_thresold;i++ {
-		//fmt.Println("hi3")
 		var udata urlData
 		udata.RID=item.ID
 		udata.Attempts=i+1
@@ -187,7 +190,6 @@ func testing(item urlModel){
 			if resp.StatusCode == 200 {
 				udata.Health = 1
 				db.Save(&udata)
-				//fmt.Println("hi4")
 				return
 				break
 
