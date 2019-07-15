@@ -18,9 +18,9 @@ func init() {
 	//open a db connection
 
 	resource.IniDb()
-	c := cron.New()
-	c.AddFunc("*/1 * * * *",service.FetchAllUrl)
-	c.Start()
+	refreshTime := cron.New()    //Refresh after 10 minutes
+	refreshTime.AddFunc("*/10 * * * *",service.FetchAllUrl)
+	refreshTime.Start()
 }
 func main() {
 
