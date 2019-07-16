@@ -69,6 +69,13 @@
     "frequency":14,
     "failure_thresold":5
 
+  },
+  {
+    "url":"https://www.flipkart.com",
+    "crawl_timeout":1000,
+    "frequency":23,
+    "failure_thresold":5
+
   }
 
 ]

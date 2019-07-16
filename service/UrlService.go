@@ -21,21 +21,7 @@ func CreateUrl(c *gin.Context) {
 	var urls []model.UrlModel
 	c.Bind(&urls)
 	for i := 0; i < len(urls); i++ {
-		var count int
-		var u model.UrlModel
-		resource.Db.Model(&model.UrlModel{}).Where("url = ?", urls[i].URL).Count(&count)
-		if count == 0 {
-			//fmt.Println("count == 0")
-			resource.Db.Save(&urls[i])
-		} else {
-			//fmt.Println("count==1")
-			resource.Db.Where("url = ?", urls[i].URL).First(&u)
-			u.Frequency=urls[i].Frequency
-			u.Crawl_timeout=urls[i].Crawl_timeout
-			u.Failure_thresold=urls[i].Failure_thresold
-			resource.Db.Save(&u)
-		}
-
+		go Test (urls[i])
 	}
 
 
@@ -51,40 +37,39 @@ func ReadUrl(c *gin.Context) {
 	p, _ := ioutil.ReadFile(c.Query("path"))
 	json.Unmarshal(p, &urls)
 	for i := 0; i < len(urls); i++ {
-		var count int
-		var u model.UrlModel
-		resource.Db.Model(&model.UrlModel{}).Where("url = ?", urls[i].URL).Count(&count)
-		if count == 0 {
-			//fmt.Println("count == 0")
-			resource.Db.Save(&urls[i])
-		} else {
-			//fmt.Println("count==1")
-			resource.Db.Where("url = ?", urls[i].URL).First(&u)
-			u.Frequency = urls[i].Frequency
-			u.Crawl_timeout = urls[i].Crawl_timeout
-			u.Failure_thresold = urls[i].Failure_thresold
-			resource.Db.Save(&u)
+			go Test (urls[i])
 		}
 
-	}
+
 
 }
 
+
+func Test(urls model.UrlModel){
+	var count int
+	var u model.UrlModel
+	resource.Db.Model(&model.UrlModel{}).Where("url = ?", urls.URL).Count(&count)
+	if count == 0 {
+		resource.Db.Save(&urls)
+	} else {
+		resource.Db.Where("url = ?", urls.URL).First(&u)
+		u.Frequency = urls.Frequency
+		u.Crawl_timeout = urls.Crawl_timeout
+		u.Failure_thresold = urls.Failure_thresold
+		resource.Db.Save(&u)
+	}
+}
 ///funtion to check health of url in a soecific tries________________________________
 
 func FetchData(c *gin.Context){
 	id:=c.Param("id")
 	tries:=c.Param("tries")
 	var data model.UrlData
-	//db.Find(&data)
-	//var health int
 	resource.Db.Model(&model.UrlModel{}).Where("url_id = ?", id).Where("total_attempts =? ",tries).First(&data)
 	if(data.URLID!=0) {
-		//fmt.Println(data.Health)
 		c.JSON(http.StatusOK,gin.H{"Health":data.Health})
 	}else {
 		c.JSON(http.StatusOK,gin.H{"Message":"Not exist"})
-		//fmt.Println("faltu")
 	}
 }
 
