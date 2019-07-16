@@ -6,14 +6,15 @@ import (
 	"github.com/gin-gonic/gin"
 	"healthmonitor/model"
 	"io/ioutil"
-
-	//"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"healthmonitor/resource"
-	//"github.com/robfig/cron"
 	"net/http"
 	"time"
 )
+
+
+///funtion to take data from postman_____________________________________________________________________
+
 
 func CreateUrl(c *gin.Context) {
 
@@ -41,6 +42,8 @@ func CreateUrl(c *gin.Context) {
 }
 
 
+///funtion to take data from files
+
 
 func ReadUrl(c *gin.Context) {
 
@@ -67,7 +70,7 @@ func ReadUrl(c *gin.Context) {
 
 }
 
-
+///funtion to check health of url in a soecific tries________________________________
 
 func FetchData(c *gin.Context){
 	id:=c.Param("id")
@@ -84,21 +87,24 @@ func FetchData(c *gin.Context){
 		//fmt.Println("faltu")
 	}
 }
+
+
+///funtion to fetch all urls and call them after some refreshing time_________________________________________
+
+
 func FetchAllUrl() {
 	var urls []model.UrlModel
 	resource.Db.Find(&urls)
-
-	//if len(urls) <= 0 {
-	//	c.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "message": "No URL found!"})
-	//	return
-	//}
-
 	for _, item := range urls {
 		go testing(item)
 
 
 	}
 }
+
+
+///funtion to check status of a url____________________________________________________________________________________
+
 
 func testing(item model.UrlModel){
 	for i:=0;i<item.Failure_thresold;i++ {
@@ -124,7 +130,6 @@ func testing(item model.UrlModel){
 				udata.Health = "GOOD"
 				resource.Db.Save(&udata)
 				return
-				break
 
 			} else {
 				udata.Health = "BAD"
