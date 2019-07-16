@@ -1,9 +1,12 @@
 package service
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"healthmonitor/model"
+	"io/ioutil"
+
 	//"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"healthmonitor/resource"
@@ -34,7 +37,37 @@ func CreateUrl(c *gin.Context) {
 
 	}
 
+
 }
+
+
+
+func ReadUrl(c *gin.Context) {
+
+	var urls []model.UrlModel
+	p, _ := ioutil.ReadFile(c.Query("path"))
+	json.Unmarshal(p, &urls)
+	for i := 0; i < len(urls); i++ {
+		var count int
+		var u model.UrlModel
+		resource.Db.Model(&model.UrlModel{}).Where("url = ?", urls[i].URL).Count(&count)
+		if count == 0 {
+			//fmt.Println("count == 0")
+			resource.Db.Save(&urls[i])
+		} else {
+			//fmt.Println("count==1")
+			resource.Db.Where("url = ?", urls[i].URL).First(&u)
+			u.Frequency = urls[i].Frequency
+			u.Crawl_timeout = urls[i].Crawl_timeout
+			u.Failure_thresold = urls[i].Failure_thresold
+			resource.Db.Save(&u)
+		}
+
+	}
+
+}
+
+
 
 func FetchData(c *gin.Context){
 	id:=c.Param("id")

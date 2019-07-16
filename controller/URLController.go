@@ -18,7 +18,11 @@ func CreateUrl(c *gin.Context) {
 	service.CreateUrl(c)
 
 }
+func ReadUrl(c *gin.Context) {
 
+	service.ReadUrl(c)
+
+}
 func FetchData(c *gin.Context){
 	service.FetchData(c)
 }

@@ -13,6 +13,7 @@ func Init_routes(){
 	v1 := router.Group("/healthmonitor")
 	{
 	v1.POST("/send", controller.CreateUrl)
+	v1.GET("/file/", controller.ReadUrl)
 	v1.GET("/health/:id/:tries", controller.FetchData)
 	}
 	router.Run()

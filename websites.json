@@ -1,16 +1,74 @@
-{
-  "websites": [
-    {
-      "url":"www.google.com",
-      "crawl_timeout": 300,
-      "frequency": 30,
-      "failure_thresold": 3
-    },
-    {
-      "url":"www.facebook.com",
-      "crawl_timeout": 400,
-      "frequency": 40,
-      "failure_thresold": 4
-    }
-  ]
-}
+[
+  {
+    "url":"https://www.google.com",
+    "crawl_timeout":8000,
+    "frequency":20,
+    "failure_thresold":2
+
+  },
+  {
+    "url":"https://www.facebook.com",
+    "crawl_timeout":2000,
+    "frequency":10,
+    "failure_thresold":2
+
+  },
+  {
+    "url":"https://www.youtube.com",
+    "crawl_timeout":4000,
+    "frequency":10,
+    "failure_thresold":5
+
+  },
+  {
+    "url":"https://www.alibaba.com",
+    "crawl_timeout":4000,
+    "frequency":13,
+    "failure_thresold":4
+
+  },
+  {
+    "url":"https://www.alisdkjhhdh.com",
+    "crawl_timeout":4000,
+    "frequency":8,
+    "failure_thresold":5
+
+  },
+
+  {
+    "url":"https://www.gaana.com",
+    "crawl_timeout":4000,
+    "frequency":10,
+    "failure_thresold":7
+
+  },
+  {
+    "url":"https://www.aljhkhjkisdkjhhdh.com",
+    "crawl_timeout":4000,
+    "frequency":13,
+    "failure_thresold":5
+
+  },
+  {
+    "url":"https://www.razorpay.com",
+    "crawl_timeout":500,
+    "frequency":14,
+    "failure_thresold":7
+
+  },
+  {
+    "url":"https://www.razorpay.com",
+    "crawl_timeout":5000,
+    "frequency":13,
+    "failure_thresold":4
+
+  },
+  {
+    "url":"https://www.amazon.com",
+    "crawl_timeout":1000,
+    "frequency":13,
+    "failure_thresold":5
+
+  }
+
+]
