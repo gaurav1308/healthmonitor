@@ -39,12 +39,12 @@
     "url":"https://www.gaana.com",
     "crawl_timeout":4000,
     "frequency":10,
-    "failure_thresold":7
+    "failure_thresold":6
 
   },
   {
     "url":"https://www.aljhkhjkisdkjhhdh.com",
-    "crawl_timeout":400,
+    "crawl_timeout":4010,
     "frequency":13,
     "failure_thresold":5
 

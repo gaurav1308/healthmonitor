@@ -9,20 +9,21 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"healthmonitor/resource"
 	"net/http"
+	"sync"
 	"time"
 )
 
 
 ///funtion to take data from postman_____________________________________________________________________
 
-
+var wg sync.WaitGroup
 func CreateUrl(c *gin.Context) {
 
 	var urls []model.UrlModel
 	c.Bind(&urls)
-	for i := 0; i < len(urls); i++ {
-		go Test (urls[i])
-	}
+
+
+	Tests(urls)
 
 
 }
@@ -36,14 +37,19 @@ func ReadUrl(c *gin.Context) {
 	var urls []model.UrlModel
 	p, _ := ioutil.ReadFile(c.Query("path"))
 	json.Unmarshal(p, &urls)
-	for i := 0; i < len(urls); i++ {
-			go Test (urls[i])
-		}
 
-
+	Tests(urls)
 
 }
 
+
+func Tests(urls []model.UrlModel){
+	wg.Add(len(urls))
+	for i := 0; i < len(urls); i++ {
+		go Test (urls[i])
+	}
+	wg.Wait()
+}
 
 func Test(urls model.UrlModel){
 	var count int
@@ -58,8 +64,9 @@ func Test(urls model.UrlModel){
 		u.Failure_thresold = urls.Failure_thresold
 		resource.Db.Save(&u)
 	}
+	wg.Done()
 }
-///funtion to check health of url in a soecific tries________________________________
+///funtion to check health of url in a specific tries________________________________
 
 func FetchData(c *gin.Context){
 	id:=c.Param("id")
